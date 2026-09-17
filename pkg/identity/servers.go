@@ -32,15 +32,15 @@ func ServersPath() (string, error) {
 // DefaultServers provides starter default hubs.
 func DefaultServers() ServerList {
 	return ServerList{
-		ActiveURL: "ws://localhost:8080/ws",
+		ActiveURL: "wss://hub-skywave-official.onrender.com/ws",
 		Servers: []ServerEntry{
 			{
-				Name:     "🌊 Skywave Official Hub",
-				URL:      "wss://hub.skywave.chat/ws",
+				Name:     "Skywave Official Hub",
+				URL:      "wss://hub-skywave-official.onrender.com/ws",
 				IsCustom: false,
 			},
 			{
-				Name:     "🏠 Localhost Dev Node",
+				Name:     "Localhost Dev Node",
 				URL:      "ws://localhost:8080/ws",
 				IsCustom: false,
 			},

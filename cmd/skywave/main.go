@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	serverURL := flag.String("server", "ws://localhost:8080/ws", "Skywave server address (ws://host:port/ws)")
+	serverURL := flag.String("server", "wss://hub-skywave-official.onrender.com/ws", "Skywave server address (ws://host:port/ws or wss://...)")
 	nickname := flag.String("nick", "", "Display name (saved to your anonymous account)")
 	password := flag.String("password", "", "Server password (for private nodes)")
 	reset := flag.Bool("reset-account", false, "Burn this machine's anonymous account and create a fresh one")

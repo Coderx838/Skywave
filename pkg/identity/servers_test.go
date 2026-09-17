@@ -10,7 +10,7 @@ func TestDefaultServers(t *testing.T) {
 
 	foundOfficial := false
 	for _, s := range d.Servers {
-		if s.URL == "wss://hub.skywave.chat/ws" {
+		if s.URL == "wss://hub-skywave-official.onrender.com/ws" {
 			foundOfficial = true
 			break
 		}

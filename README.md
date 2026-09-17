@@ -64,7 +64,7 @@ Skywave is designed for developers, systems engineers, and power users who opera
 Clone the repository and compile the binaries:
 
 ```bash
-git clone https://github.com/Coderx838/skywave.git
+git clone https://github.com/Coderx838/Skywave.git
 cd skywave
 
 # Compile the client

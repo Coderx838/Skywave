@@ -28,6 +28,6 @@ COPY --from=builder /app/skywave-server /app/skywave-server
 # Default port
 EXPOSE 8080
 
-# Run server with zero-log default or custom params
+# Run server with zero-log default or custom params (picks up $PORT automatically if provided)
 ENTRYPOINT ["/app/skywave-server"]
-CMD ["-port", "8080", "-host", "0.0.0.0", "-name", "Skywave Community Node"]
+CMD ["-host", "0.0.0.0", "-name", "Skywave Community Node"]

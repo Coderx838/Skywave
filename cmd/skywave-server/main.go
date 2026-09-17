@@ -3,12 +3,21 @@ package main
 import (
 	"flag"
 	"log"
+	"os"
+	"strconv"
 
 	"github.com/skywave-chat/skywave/pkg/server"
 )
 
 func main() {
-	port := flag.Int("port", 8080, "Port to listen on")
+	defaultPort := 8080
+	if envPort := os.Getenv("PORT"); envPort != "" {
+		if p, err := strconv.Atoi(envPort); err == nil {
+			defaultPort = p
+		}
+	}
+
+	port := flag.Int("port", defaultPort, "Port to listen on (default 8080 or $PORT)")
 	host := flag.String("host", "0.0.0.0", "Host address to bind")
 	name := flag.String("name", "Skywave Prime Node", "Display name of this server node")
 	password := flag.String("password", "", "Set a server password to make this instance private")

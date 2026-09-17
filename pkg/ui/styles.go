@@ -131,21 +131,21 @@ func sHeaderBar() lipgloss.Style {
 func sTabActive(name string, count int, isPrivate bool) string {
 	lock := ""
 	if isPrivate {
-		lock = " 🔒"
+		lock = " " + lipgloss.NewStyle().Foreground(current.Accent).Bold(true).Render("◈")
 	}
 	dot := lipgloss.NewStyle().Foreground(current.Primary).Render("● ")
-	label := lipgloss.NewStyle().Foreground(current.Text).Bold(true).Render(name + lock)
-	return " " + dot + label + " "
+	label := lipgloss.NewStyle().Foreground(current.Text).Bold(true).Render(name)
+	return " " + dot + label + lock + " "
 }
 
 func sTabInactive(idx int, name string, count int, isPrivate bool) string {
 	lock := ""
 	if isPrivate {
-		lock = " 🔒"
+		lock = " " + lipgloss.NewStyle().Foreground(current.Muted).Render("◈")
 	}
 	num := lipgloss.NewStyle().Foreground(current.Muted).Render(lipgloss.NewStyle().SetString(string(rune('0'+idx))).String() + ":")
-	label := lipgloss.NewStyle().Foreground(current.TextDim).Render(name + lock)
-	return " " + num + label + " "
+	label := lipgloss.NewStyle().Foreground(current.TextDim).Render(name)
+	return " " + num + label + lock + " "
 }
 
 func sTabAdd() string {
@@ -192,7 +192,7 @@ func sStatus() lipgloss.Style {
 // Modals
 func sModal() lipgloss.Style {
 	return lipgloss.NewStyle().
-		Border(lipgloss.NormalBorder()).
+		Border(lipgloss.RoundedBorder()).
 		BorderForeground(current.BorderActive).
 		Background(current.PanelBg).
 		Padding(1, 2)

@@ -468,10 +468,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				name, pass := m.roomModal.Values()
 				m.roomModal.Close()
 				if name != "" {
+					if !strings.HasPrefix(name, "#") {
+						name = "#" + name
+					}
 					_ = m.client.JoinRoom(name, pass)
 					m.activeRoom = name
 					if pass != "" {
-						m.toast = "Encrypted frequency tuned: " + name
+						m.toast = "Encrypted channel tuned: " + name
 					} else {
 						m.toast = "Tuned into " + name
 					}
@@ -522,11 +525,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case tea.KeyCtrlB:
 			m.bellEnabled = !m.bellEnabled
-			st := "ON 🔔"
+			st := "ACTIVE"
 			if !m.bellEnabled {
-				st = "OFF 🔕"
+				st = "MUTED"
 			}
-			m.toast = "Bell: " + st
+			m.toast = "Audio Chime: " + st
 			m.toastAt = time.Now()
 			return m, nil
 
@@ -779,7 +782,7 @@ func (m *Model) handleSend(input string) (bool, []tea.Cmd) {
 		if !m.bellEnabled {
 			st = "MUTED"
 		}
-		m.addMsg(KindSystem, "🔔 Chime bell is now "+st)
+		m.addMsg(KindSystem, "◈ Audio chime is now "+st)
 	case "/theme":
 		if len(args) < 1 {
 			m.addMsg(KindSystem, "available themes: "+strings.Join(ThemeNames(), ", "))
@@ -996,7 +999,11 @@ func (m *Model) refreshChat() {
 	var lastTime time.Time
 
 	// Clean, centered header card for active channel
-	channelIntro := lipgloss.NewStyle().Foreground(current.Secondary).Render(fmt.Sprintf("── ◈ %s ──", m.activeRoom))
+	introText := fmt.Sprintf("── ◈ %s ──", m.activeRoom)
+	if m.client.GetRoomKey(m.activeRoom) != "" {
+		introText = fmt.Sprintf("── ◈ %s ◈ [E2EE] ──", m.activeRoom)
+	}
+	channelIntro := lipgloss.NewStyle().Foreground(current.Secondary).Bold(true).Render(introText)
 	topicStr := m.topics[m.activeRoom]
 	if topicStr == "" {
 		topicStr = "Active frequency on the decentralized wave."
@@ -1004,12 +1011,40 @@ func (m *Model) refreshChat() {
 	topicCard := lipgloss.NewStyle().Foreground(current.TextDim).Italic(true).Render(topicStr)
 	lines = append(lines, "", " "+channelIntro, " "+topicCard, "")
 
-	// E2EE Banner if active
+	// E2EE Banner if active: closed, symmetrical cyberdeck cipher card
 	if key := m.client.GetRoomKey(m.activeRoom); key != "" {
-		bannerTop := lipgloss.NewStyle().Foreground(current.Primary).Render(" ╭── 🔒 E2EE SHIELD ACTIVE // AES-256-GCM ─────────────────────────────")
-		bannerMid := lipgloss.NewStyle().Foreground(current.TextDim).Render(" │  Passphrase derived key active. Server relay only sees ciphertext.")
-		bannerBot := lipgloss.NewStyle().Foreground(current.Primary).Render(" ╰────────────────────────────────────────────────────────────────────")
-		lines = append(lines, bannerTop, bannerMid, bannerBot, "")
+		boxWidth := 72
+		if m.viewport.Width > 10 && m.viewport.Width-6 < boxWidth {
+			boxWidth = m.viewport.Width - 6
+		}
+		if boxWidth < 46 {
+			boxWidth = 46
+		}
+
+		shieldTitle := lipgloss.NewStyle().
+			Foreground(current.Accent).
+			Bold(true).
+			Render("◈ END-TO-END CIPHER SHIELD ACTIVE // AES-256-GCM")
+
+		line1 := lipgloss.NewStyle().
+			Foreground(current.TextDim).
+			Render("• Cipher:  Authenticated AES-256-GCM client-side encryption")
+
+		line2 := lipgloss.NewStyle().
+			Foreground(current.TextDim).
+			Render("• Privacy: Zero-knowledge relay — server relays ciphertext payloads only")
+
+		cardContent := lipgloss.JoinVertical(lipgloss.Left, shieldTitle, "", line1, line2)
+
+		shieldCard := lipgloss.NewStyle().
+			Border(lipgloss.RoundedBorder()).
+			BorderForeground(current.Accent).
+			Padding(0, 1).
+			Width(boxWidth).
+			MarginLeft(1).
+			Render(cardContent)
+
+		lines = append(lines, shieldCard, "")
 	}
 
 	activeMsgs := m.roomMessages[m.activeRoom]
@@ -1113,9 +1148,9 @@ func (m Model) renderHeader() string {
 
 	left := lipgloss.JoinHorizontal(lipgloss.Center, logo, "  ", tabBuilder.String())
 
-	radarStatus := lipgloss.NewStyle().Foreground(current.TextDim).Render(fmt.Sprintf("● %d SOULS", len(m.activeUsers)))
+	radarStatus := lipgloss.NewStyle().Foreground(current.TextDim).Render(fmt.Sprintf("● %d ONLINE", len(m.activeUsers)))
 	if m.showRadar {
-		radarStatus = lipgloss.NewStyle().Background(current.PanelBg).Foreground(current.Primary).Bold(true).Padding(0, 1).Render(fmt.Sprintf("◈ %d SOULS [RADAR ON]", len(m.activeUsers)))
+		radarStatus = lipgloss.NewStyle().Background(current.PanelBg).Foreground(current.Primary).Bold(true).Padding(0, 1).Render(fmt.Sprintf("◈ %d ONLINE [RADAR ON]", len(m.activeUsers)))
 	}
 
 	clock := lipgloss.NewStyle().Foreground(current.Muted).Render(time.Now().Format("15:04"))
@@ -1136,7 +1171,7 @@ func (m Model) renderHeader() string {
 
 func (m Model) renderRadar(width, height int) string {
 	var b strings.Builder
-	title := lipgloss.NewStyle().Background(current.PanelBg).Foreground(current.Text).Bold(true).Render(" ◈ SOULS ON RADAR ")
+	title := lipgloss.NewStyle().Background(current.PanelBg).Foreground(current.Text).Bold(true).Render(" ◈ ONLINE ON RADAR ")
 	b.WriteString(title + "\n\n")
 
 	users := append([]string(nil), m.activeUsers...)
@@ -1170,7 +1205,11 @@ func (m Model) renderRadar(width, height int) string {
 
 func (m Model) renderDeck() string {
 	// Clean, single prompt prefix (ti.Prompt is empty to prevent duplicate "> >")
-	prompt := sDeckPrompt(m.activeRoom).Render(m.activeRoom + " ❯ ")
+	promptText := m.activeRoom
+	if m.client.GetRoomKey(m.activeRoom) != "" {
+		promptText += " ◈"
+	}
+	prompt := sDeckPrompt(m.activeRoom).Render(promptText + " ❯ ")
 
 	typingNotice := ""
 	if len(m.typing) > 0 {
@@ -1207,13 +1246,13 @@ func (m Model) renderStatusline() string {
 // overlayHelp renders the Cyberdeck manual.
 func (m Model) overlayHelp(_ string) string {
 	rows := []string{
-		"  🌊 SKYWAVE TRANSCEIVER // COMMAND DECK",
+		"  ◈ SKYWAVE TRANSCEIVER // COMMAND DECK",
 		"  ──────────────────────────────────────────────────────────────────",
 		"  FREQUENCY & RADAR NAVIGATION",
 		"  1 .. 9            Quick-dial frequency tabs (when prompt empty)",
 		"  [  and  ]         Cycle to previous / next frequency channel",
-		"  Tab               Toggle Souls Radar Drawer (live member radar)",
-		"  Ctrl+K / Ctrl+P   Spotlight Quick Jumper (Jump to room/soul/action)",
+		"  Tab               Toggle Member Radar Drawer (live presence radar)",
+		"  Ctrl+K / Ctrl+P   Spotlight Quick Jumper (Jump to room/user/action)",
 		"  Ctrl+S            Server Switcher Drawer (Hot-swap server nodes)",
 		"  Ctrl+N            Tune New Frequency / Encrypted E2EE Room",
 		"  Ctrl+T            Cycle Cyber Themes (Obsidian, Cognac, Monochrome)",

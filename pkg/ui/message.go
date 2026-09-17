@@ -74,7 +74,7 @@ func (m DisplayMessage) Render(currentNick string, maxCol int) string {
 		head := lipgloss.NewStyle().Background(current.Accent).Foreground(current.DarkBg).Bold(true).Padding(0, 1).Render(target)
 		lock := ""
 		if m.IsEncrypted {
-			lock = " 🔒"
+			lock = " " + lipgloss.NewStyle().Foreground(current.Accent).Bold(true).Render("◈")
 		}
 		body := formatBody(content, currentNick)
 		return fmt.Sprintf(" %s %s%s\n         │ %s", timeStr, head, lock, body)
@@ -100,7 +100,7 @@ func (m DisplayMessage) Render(currentNick string, maxCol int) string {
 
 		lock := ""
 		if m.IsEncrypted {
-			lock = lipgloss.NewStyle().Foreground(current.Accent).Render(" 🔒")
+			lock = " " + lipgloss.NewStyle().Foreground(current.Accent).Bold(true).Render("◈")
 		}
 
 		arrow := lipgloss.NewStyle().Foreground(current.Muted).Render("❯")

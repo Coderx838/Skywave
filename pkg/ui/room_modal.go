@@ -76,17 +76,18 @@ func (rm *RoomModal) Values() (string, string) {
 
 // View renders the modal.
 func (rm *RoomModal) View(screenWidth, screenHeight int) string {
-	boxWidth := 54
+	boxWidth := 58
 
-	header := sModalTitle("TUNE NEW FREQUENCY / E2EE (Ctrl+N)")
-	shieldNotice := sStatus().Render("Passphrase triggers client-side AES-256-GCM E2EE.")
+	header := sModalTitle("TUNE NEW FREQUENCY // E2EE")
+	shieldNotice := lipgloss.NewStyle().Foreground(current.Accent).Render("◈ Secret activates client-side AES-256-GCM encryption.")
+	helpHint := sStatus().Render("\n[Tab]: Switch Field  ·  [Enter]: Join/Create  ·  [Esc]: Cancel")
 
 	content := lipgloss.JoinVertical(lipgloss.Left,
 		header,
 		"\n"+rm.nameInput.View(),
 		"\n"+rm.passInput.View(),
 		"\n"+shieldNotice,
-		sStatus().Render("\n[Tab]: Switch Field  [Enter]: Join/Create  [Esc]: Cancel"),
+		helpHint,
 	)
 
 	modalBox := sModal().Width(boxWidth).Render(content)

@@ -287,10 +287,10 @@ func (c *Client) readPump() {
 						if err == nil {
 							chat.Content = plain
 						} else {
-							chat.Content = "[🔒 Encrypted message — unable to decrypt]"
+							chat.Content = "[◈ Encrypted message — unable to decrypt]"
 						}
 					} else {
-						chat.Content = "[🔒 Encrypted message — key required]"
+						chat.Content = "[◈ Encrypted message — key required]"
 					}
 					p.Payload = chat
 				}

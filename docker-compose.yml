@@ -1,0 +1,13 @@
+services:
+  skywave-server:
+    build: .
+    container_name: skywave-server
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    command:
+      - "-port=8080"
+      - "-host=0.0.0.0"
+      - "-name=Skywave Public Node"
+      - "-motd=Welcome to Skywave. Encrypted, anonymous, and terminal-native."
+      - "-history=50"

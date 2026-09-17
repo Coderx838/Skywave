@@ -21,3 +21,11 @@ desktop.ini
 # Temporary files
 *.tmp
 Screenshot*.png
+
+# Local runner scripts
+*.bat
+*.ps1
+skywave.bat
+skywave.ps1
+skywave-server.bat
+skywave-server.ps1

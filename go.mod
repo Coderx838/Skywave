@@ -1,6 +1,6 @@
 module github.com/skywave-chat/skywave
 
-go 1.27.0
+go 1.24.0
 
 require (
 	github.com/charmbracelet/bubbles v1.0.0

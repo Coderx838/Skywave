@@ -1,5 +1,8 @@
 # Compiled binaries
 bin/
+dist/
+*.zip
+*.tar.gz
 *.exe
 *.exe~
 *.dll
